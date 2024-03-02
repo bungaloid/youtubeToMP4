@@ -1,4 +1,5 @@
 import tkinter
+import os
 import customtkinter
 from pytube import YouTube
 
@@ -22,12 +23,17 @@ def startAudioDownload():
     try:
         ytLink = link.get()
         ytObject = YouTube(ytLink, on_progress_callback=on_progress)
-        audio = ytObject.streams.filter(only_audio = True).first()
+        video = ytObject.streams.filter(only_audio = True).first()
 
-        if audio:
+        if video:
             title.configure(text=ytObject.title, text_color="white")
             finishlabel.configure(text="")            
-            audio.download()
+            out_file = video.download(output_path='.') 
+  
+            # save the file 
+            base, ext = os.path.splitext(out_file) 
+            new_file = base + '.mp3'
+            os.rename(out_file, new_file) 
             finishlabel.configure(text="Downloaded Audio", text_color="white")
         else:
             finishlabel.configure(text="Download failed", text_color="red")
@@ -50,7 +56,7 @@ def on_progress(stream, chunk, bytes_remaining):
 
 #System Settings
 customtkinter.set_appearance_mode("System")
-customtkinter.set_default_color_theme("blue")
+customtkinter.set_default_color_theme("green")
 
 #Our App Frame
 app = customtkinter.CTk()
